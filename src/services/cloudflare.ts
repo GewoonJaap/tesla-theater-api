@@ -56,7 +56,8 @@ export const cloudflareService = {
                    VALUES (?, ?, ?, ?, ?)`;
 
     try {
-      await cf.d1.database.query(CLOUDFLARE_D1_DATABASE_ID, CLOUDFLARE_ACCOUNT_ID, {
+      await cf.d1.database.query(CLOUDFLARE_D1_DATABASE_ID, {
+        account_id: CLOUDFLARE_ACCOUNT_ID,
         sql: query,
         params: [videoId, title, videoUrl, thumbnailUrl, new Date().toISOString()],
       });
@@ -73,10 +74,12 @@ export const cloudflareService = {
   async getAllVideos() {
     const query = `SELECT * FROM videos ORDER BY created_at DESC`;
     try {
-      const resp = await cf.d1.database.query(CLOUDFLARE_D1_DATABASE_ID, CLOUDFLARE_ACCOUNT_ID, {
+      const resp = await cf.d1.database.query(CLOUDFLARE_D1_DATABASE_ID, {
+        account_id: CLOUDFLARE_ACCOUNT_ID,
         sql: query,
       });
-      return resp.result?.[0]?.results || [];
+      // Cast response appropriately or access rows
+      return (resp as any).result?.[0]?.results || [];
     } catch (error) {
       console.error('Error fetching videos from Cloudflare D1', error);
       throw error;

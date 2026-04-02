@@ -19,6 +19,8 @@ export const startVideoProcessing = async (c: Context) => {
 
 export const getVideoStatus = (c: Context) => {
   const id = c.req.param('id');
+  if (!id) return c.json({ error: 'Missing ID' }, 400);
+
   const job = jobs.get(id);
   if (!job) return c.json({ error: 'Job not found' }, 404);
   return c.json(job);
